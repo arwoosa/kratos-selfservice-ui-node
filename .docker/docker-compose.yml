@@ -1,0 +1,21 @@
+services:
+  ui:
+    build:
+      context: ..
+      dockerfile: Dockerfile-dev
+    # image: oryd/kratos-selfservice-ui-node:latest 
+    environment:
+      - KRATOS_PUBLIC_URL=http://kratos:4433
+      - KRATOS_BROWSER_URL=http://dev-sso.docker.localhost/api
+      - COOKIE_SECRET=this_is_cookie_secret
+      - CSRF_COOKIE_NAME=__HOST-dev-sso.in-cloud.tw-x-csrf-token
+      - CSRF_COOKIE_SECRET=this_is_csrf_cookie_secret
+    labels:
+      - traefik.http.routers.ui.entrypoints=web
+      - traefik.http.services.ui.loadbalancer.server.port=3000
+      - traefik.http.routers.ui.rule=Host(`dev-sso.docker.localhost`) || Host(`dev-sso.in-cloud.tw`)
+    volumes:
+      - ..:/usr/src/app
+      - /usr/src/node_modules
+    networks:
+      - dev-network
